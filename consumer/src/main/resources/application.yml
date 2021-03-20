@@ -1,0 +1,49 @@
+#服务启动端口号
+server:
+  port: 8081
+#服务名称（服务注册到eureka名称）
+spring:
+  application:
+    name: consumer
+#RabbitMQ  config begin
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        # 消费手动确认
+        acknowledge-mode: manual
+        default-requeue-rejected: true
+        #并发消费者初始化值
+        concurrency: 2
+        #并发消费者的最大值
+        max-concurrency: 5
+        #每个消费者每次监听时可拉取处理的消息数量
+        prefetch: 1
+
+#服务注册到eureka地址
+eureka:
+  instance:
+    prefer-ip-address: true #不使用主机名来定义注册中心的地址，而使用IP地址的形式，如果设置了 eureka.instance.ip-address 属性，则使用该属性配置的IP，否则自动获取除环路IP外的第一个IP地址
+    instance-id: 127.0.0.1:${server.port}:0.0.1.SNAPSHOT  #IP地址
+    hostname: consumer  # eureka实例名称
+    appname: consumer #服务名，默认取值spring.application.name配置值  如果没有则为unknow
+    lease-renewal-interval-in-seconds: 60  #定义服务续约任务心跳的调用间隔， 单位为：秒
+    lease-expiration-duration-in-seconds: 120 #定义服务失效时间，单位：秒
+
+  client:
+    serviceUrl:    #指定服务注册中心地址 类型Hash Map 并设置一组默认值， 默认的key 为defaultZone 如果服务注册中心为高可用集群时，多个注册中心地址用，隔开
+      defaultZone: http://127.0.0.1:8888/eureka/
+    register-with-eureka: true # 启动服务注册
+    fetch-register: true #是否需要从eureka上面获取注册信息
+    eureka-server-read-timeout-seconds: 30  #eureka 服务端连接空闲关闭时间 单位：秒
+
+feign:
+  hystrix:
+    enabled: true
+
+producer:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule #负载均衡策略，表示加权规则  yml配置优先级第一，Java代码第二，默认的最后

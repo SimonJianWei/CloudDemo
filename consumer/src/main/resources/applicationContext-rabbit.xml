@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!-- delay queue -->
+    <rabbit:queue name="demo.delay">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="cloud_direct"/>
+            <entry key="x-dead-letter-routing-key" value="demo.queue"/>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!-- direct queue -->
+    <rabbit:queue name="demo.queue">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="cloud_dead"/>
+            <entry key="x-dead-letter-routing-key" value="demo.queue"/>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!-- dead queue -->
+    <rabbit:queue name="demo.dead"/>
+
+    <!-- direct exchange -->
+    <rabbit:direct-exchange name="cloud_direct">
+        <rabbit:bindings>
+            <rabbit:binding queue="demo.delay" key="demo.delay"/>
+            <rabbit:binding queue="demo.queue" key="demo.queue"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- dead exchange -->
+    <rabbit:direct-exchange name="cloud_dead">
+        <rabbit:bindings>
+            <rabbit:binding queue="demo.dead" key="demo.dead"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+</beans>
