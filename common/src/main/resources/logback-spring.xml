@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
     <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <!--指定日志文件位置，若未指定位置则在当前工程下-->
+    <property name="LOG_PATH" value="E://Log"></property>
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>${LOG_PATH}/account.log</File>
+        <File>${LOG_PATH}/info.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/account-%d{yyyyMMdd}-%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -62,6 +64,7 @@
     <logger name="springfox.documentation" level="WARN" />
     <logger name="cloud.eureka.common" level="info">
         <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
     
     <root level="INFO">
